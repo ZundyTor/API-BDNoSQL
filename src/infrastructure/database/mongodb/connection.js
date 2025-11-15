@@ -37,8 +37,6 @@ class MongoDBConnection {
 
       // Opciones de conexión
       const options = {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
         maxPoolSize: 10, // Máximo de conexiones en el pool
         serverSelectionTimeoutMS: 5000, // Timeout de 5 segundos
         socketTimeoutMS: 45000, // Timeout de socket
