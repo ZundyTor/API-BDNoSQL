@@ -110,21 +110,33 @@ const cityController = new CityController(cityUseCases);
 // ==========================================
 
 // Ruta de bienvenida
+// Ruta raíz - Servir el frontend
 app.get('/', (req, res) => {
-  res.json({
-    message: '🌍 API de Países - PostgreSQL & MongoDB',
-    version: '1.0.0',
-    author: 'ZundyTor',
-    endpoints: {
-      health: '/health',
-      api: '/api/v1/countries',
-      documentation: '/api/v1/docs'
-    },
-    databases: {
-      postgresql: 'Conectado',
-      mongodb: 'Conectado'
+    console.log('\n📨 GET /');
+    console.log('Query params:', req.query);
+    
+    // Si la petición acepta HTML, servir el frontend
+    if (req.accepts('html')) {
+        res. sendFile('index.html', { root: './public' });
+    } else {
+        // Si la petición acepta JSON, devolver info de la API
+        res.json({
+            message: '🌍 API de Países y Ciudades - PostgreSQL',
+            version: '1.0.0',
+            author: 'ZundyTor',
+            endpoints: {
+                frontend: '/',
+                health: '/health',
+                countries: '/api/v1/countries',
+                cities: '/api/v1/cities',
+                documentation: '/api/v1/docs'
+            },
+            deployment: {
+                frontend: 'https://api-bdnosql.onrender.com',
+                backend: 'https://api-bdnosql.onrender.com/api/v1'
+            }
+        });
     }
-  });
 });
 
 // Ruta de health check

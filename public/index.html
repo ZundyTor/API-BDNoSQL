@@ -244,9 +244,129 @@
             }
         }
 
-        function showCreateCityForm() {
-            showToast('Función de crear ciudad - Próximamente', 'success');
+        async function showCreateCityForm() {
+            try {
+                // Obtener lista de países para el selector
+                showToast('⏳ Cargando países...', 'success');
+                
+                const response = await window.fetchAPI('/countries?database=postgresql&limit=100');
+                
+                if (!response.success || !response.data) {
+                    showToast('❌ No se pudieron cargar los países', 'error');
+                    return;
+                }
+
+                const countries = response.data;
+                
+                const modalBody = document.getElementById('modal-body');
+                
+                modalBody.innerHTML = `
+                    <h2>➕ Crear Nueva Ciudad</h2>
+                    <form id="create-city-form" onsubmit="handleCreateCity(event)">
+                        <div class="form-group">
+                            <label for="city-countryId">País *</label>
+                            <select id="city-countryId" name="countryId" required>
+                                <option value="">Seleccionar país... </option>
+                                ${countries. map(country => `
+                                    <option value="${country. id}">
+                                        ${country.flag || '🌍'} ${country.name}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city-name">Nombre de la Ciudad *</label>
+                            <input type="text" id="city-name" name="name" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city-population">Población *</label>
+                            <input type="number" id="city-population" name="population" required min="1">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city-isCapital">¿Es capital?</label>
+                            <select id="city-isCapital" name="isCapital" required>
+                                <option value="false">No</option>
+                                <option value="true">Sí</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city-latitude">Latitud (opcional)</label>
+                            <input type="number" id="city-latitude" name="latitude" step="0.0001" placeholder="Ej: 4.7110">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="city-longitude">Longitud (opcional)</label>
+                            <input type="number" id="city-longitude" name="longitude" step="0.0001" placeholder="Ej: -74.0721">
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">✅ Crear Ciudad</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeModal()">❌ Cancelar</button>
+                        </div>
+                    </form>
+                `;
+                
+                showModal();
+
+            } catch (error) {
+                console.error('Error al cargar países:', error);
+                showToast(`❌ Error: ${error.message}`, 'error');
+            }
         }
+
+        async function handleCreateCity(event) {
+            event.preventDefault();
+            
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            const cityData = {
+                countryId: formData.get('countryId'),
+                name: formData.get('name'),
+                population: parseInt(formData.get('population')),
+                isCapital: formData.get('isCapital') === 'true',
+                latitude: formData.get('latitude') ? parseFloat(formData.get('latitude')) : undefined,
+                longitude: formData. get('longitude') ? parseFloat(formData.get('longitude')) : undefined
+            };
+
+            try {
+                // Deshabilitar botón de envío
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Creando...';
+
+                const response = await window.fetchAPI('/cities', {
+                    method: 'POST',
+                    body: JSON.stringify(cityData)
+                });
+
+                if (response.success) {
+                    showToast('✅ Ciudad creada exitosamente', 'success');
+                    closeModal();
+                    
+                    // Si estamos en el tab de ciudades, recargar
+                    const citiesTab = document.getElementById('cities-tab');
+                    if (citiesTab. classList.contains('active')) {
+                        loadCities();
+                    }
+                } else {
+                    showToast('❌ Error al crear ciudad', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error al crear ciudad:', error);
+                showToast(`❌ Error: ${error.message}`, 'error');
+                
+                // Re-habilitar botón
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.textContent = '✅ Crear Ciudad';
+            }
+        } 
     </script>
 
     <!-- Scripts -->

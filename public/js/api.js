@@ -5,11 +5,19 @@
 // Verificar si ya está inicializado
 if (typeof window.API_INITIALIZED === 'undefined') {
     
-    // ⭐ OPCIÓN 2: Usar API de producción (desarrollo con datos reales)
-    window. API_BASE_URL = 'https://api-bdnosql.onrender.com/api/v1';
+    // Detectar automáticamente si estamos en local o producción
+    const isLocalhost = window.location.hostname === 'localhost' || 
+                        window.location.hostname === '127.0.0.1';
+    
+    // Si estamos en localhost, usar API de producción (Opción 2)
+    // Si estamos en producción, usar /api/v1 relativo
+    window.  API_BASE_URL = isLocalhost 
+        ? 'https://api-bdnosql.onrender.com/api/v1'  // Localhost apunta a producción
+        : '/api/v1';  // Producción usa rutas relativas
 
     console.log('🌐 API URL configurada:', window.API_BASE_URL);
-    console.log('📍 Modo: Usando API de PRODUCCIÓN (Supabase)');
+    console.log('📍 Hostname:', window.location.hostname);
+    console.log('📍 Modo:', isLocalhost ? 'DESARROLLO (apuntando a producción)' : 'PRODUCCIÓN');
 
     /**
      * Función genérica para hacer peticiones HTTP
@@ -25,12 +33,12 @@ if (typeof window.API_INITIALIZED === 'undefined') {
                     'Content-Type': 'application/json',
                     ...options.headers
                 },
-                ...options
+                ... options
             });
 
             const data = await response.json();
 
-            if (!response.ok) {
+            if (! response.ok) {
                 throw new Error(data.message || 'Error en la petición');
             }
 
