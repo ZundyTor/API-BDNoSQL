@@ -46,7 +46,17 @@ const PORT = process.env.PORT || 3000;
 // ==========================================
 
 app.use(express.json());
-app.use(cors());
+
+// CORS - Permitir peticiones desde cualquier origen
+app.use(cors({
+  origin: '*', // Permitir todos los orígenes (desarrollo y producción)
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+}));
+
+// Servir archivos estáticos del frontend
+app.use(express.static('public'));
 
 // Middleware para logging de peticiones
 app.use((req, res, next) => {
