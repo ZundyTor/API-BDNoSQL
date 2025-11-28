@@ -1,13 +1,13 @@
 # 🌍 API de Países y Ciudades - Arquitectura Hexagonal
 
-![Node.js](https://img.shields.io/badge/Node.js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
-![Express](https://img. shields.io/badge/Express. js-404D59?style=for-the-badge)
-![PostgreSQL](https://img.shields. io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Node.js](https://img. shields.io/badge/Node. js-43853D?style=for-the-badge&logo=node.js&logoColor=white)
+![Express](https://img.shields.io/badge/Express. js-404D59?style=for-the-badge)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white)
 ![Supabase](https://img. shields.io/badge/Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)
 ![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge&logo=render&logoColor=white)
 
-API REST completa para gestión de países y ciudades, implementada con **Arquitectura Hexagonal (Puertos y Adaptadores)** y desplegada en la nube. 
+API REST completa para gestión de países y ciudades, implementada con **Arquitectura Hexagonal (Puertos y Adaptadores)** y desplegada en la nube.  
 
 **🔗 API en Producción:** https://api-bdnosql. onrender.com
 
@@ -35,7 +35,7 @@ API REST completa para gestión de países y ciudades, implementada con **Arquit
 ✅ **Doble persistencia**: PostgreSQL + MongoDB  
 ✅ **CRUD completo** para Countries y Cities  
 ✅ **Relación 1:N** entre Countries y Cities  
-✅ **API RESTful** con Express. js  
+✅ **API RESTful** con Express.js  
 ✅ **Validación de datos** con entidades de dominio  
 ✅ **Manejo de errores** centralizado  
 ✅ **Logging** de peticiones  
@@ -161,13 +161,13 @@ API-BDNoSQL/
 │           └── errorHandler.js        # Middleware de errores
 │
 ├── scripts/
-│   └── seed.js                        # Script para poblar BD
+│   └── seed. js                        # Script para poblar BD
 │
 ├── server.js                          # Punto de entrada
 ├── package.json
 ├── . env. example                       # Ejemplo de variables
-├── .gitignore
-└── README.md
+├── . gitignore
+└── README. md
 ```
 
 ---
@@ -196,7 +196,7 @@ cd API-BDNoSQL
 npm install
 ```
 
-3.  **Configurar variables de entorno:**
+3. **Configurar variables de entorno:**
 
 Crea un archivo `.env` en la raíz del proyecto:
 
@@ -290,7 +290,7 @@ node scripts/seed.js
 | POST | `/api/v1/countries` | Crear país | `? database=both\|postgresql\|mongodb` |
 | GET | `/api/v1/countries` | Listar todos | `?database=postgresql\|mongodb&limit=100&offset=0` |
 | GET | `/api/v1/countries/:id` | Obtener por ID | `?database=postgresql\|mongodb` |
-| GET | `/api/v1/countries/continent/:continent` | Por continente | `?database=postgresql\|mongodb` |
+| GET | `/api/v1/countries/continent/:continent` | Por continente | `? database=postgresql\|mongodb` |
 | GET | `/api/v1/countries/stats/summary` | Estadísticas | `?database=postgresql\|mongodb` |
 | PUT | `/api/v1/countries/:id` | Actualizar | `?database=both\|postgresql\|mongodb` |
 | DELETE | `/api/v1/countries/:id` | Eliminar | `?database=both\|postgresql\|mongodb` |
@@ -300,7 +300,7 @@ node scripts/seed.js
 | Método | Endpoint | Descripción | Query Params |
 |--------|----------|-------------|--------------|
 | POST | `/api/v1/cities` | Crear ciudad | - |
-| GET | `/api/v1/cities` | Listar todas | `?limit=100&offset=0&countryId=...&capitalsOnly=true` |
+| GET | `/api/v1/cities` | Listar todas | `?limit=100&offset=0&countryId=... &capitalsOnly=true` |
 | GET | `/api/v1/cities/:id` | Obtener por ID | - |
 | GET | `/api/v1/countries/:countryId/cities` | Ciudades de un país | `?limit=50&offset=0` |
 | PUT | `/api/v1/cities/:id` | Actualizar | - |
@@ -372,8 +372,7 @@ GET https://api-bdnosql. onrender.com/api/v1/countries?database=postgresql&limit
       "population": 52000000,
       "language": "Español",
       "flag": "🇨🇴"
-    },
-    ... 
+    }
   ],
   "metadata": {
     "total": 10,
@@ -482,25 +481,6 @@ GET https://api-bdnosql.onrender.com/api/v1/cities?countryId=country_17643327575
 
 ---
 
-## 📸 Capturas de Pantalla
-
-### **Health Check en Producción:**
-
-![Health Check](docs/screenshots/health-check.png)
-
-### **Listar Países:**
-
-![Get Countries](docs/screenshots/get-countries.png)
-
-### **Crear Ciudad:**
-
-![Create City](docs/screenshots/create-city.png)
-
-### **Relación 1:N (Ciudades de un País):**
-
-![Cities by Country](docs/screenshots/cities-by-country.png)
-
----
 
 ## 🧪 Testing
 
@@ -519,13 +499,13 @@ Las contribuciones son bienvenidas. Por favor:
 2. Crea una rama (`git checkout -b feature/nueva-funcionalidad`)
 3.  Commit tus cambios (`git commit -m 'Agregar nueva funcionalidad'`)
 4. Push a la rama (`git push origin feature/nueva-funcionalidad`)
-5. Abre un Pull Request
+5.  Abre un Pull Request
 
 ---
 
 ## 📄 Licencia
 
-Este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE).
+Este proyecto es de código abierto y está disponible bajo la [Licencia MIT](LICENSE). 
 
 ---
 
