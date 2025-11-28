@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌍 API Countries & Cities - Dashboard</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <h1>🌍 Countries & Cities Dashboard</h1>
+            <p>Gestión de Países y Ciudades</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container">
+        <!-- Tabs de Navegación -->
+        <div class="tabs">
+            <button class="tab-button active" data-tab="countries">
+                🌍 Países
+            </button>
+            <button class="tab-button" data-tab="cities">
+                🏙️ Ciudades
+            </button>
+        </div>
+
+        <!-- Tab Content: Countries -->
+        <div id="countries-tab" class="tab-content active">
+            <h2>Lista de Países</h2>
+            
+            <!-- Botón para crear nuevo país -->
+            <button class="btn btn-primary" onclick="showCreateCountryForm()">
+                ➕ Crear Nuevo País
+            </button>
+
+            <!-- Lista de países -->
+            <div id="countries-list" class="data-grid">
+                <p>Cargando países...</p>
+            </div>
+        </div>
+
+        <!-- Tab Content: Cities -->
+        <div id="cities-tab" class="tab-content">
+            <h2>Lista de Ciudades</h2>
+            
+            <!-- Botón para crear nueva ciudad -->
+            <button class="btn btn-primary" onclick="showCreateCityForm()">
+                ➕ Crear Nueva Ciudad
+            </button>
+
+            <!-- Lista de ciudades -->
+            <div id="cities-list" class="data-grid">
+                <p>Cargando ciudades...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal para formularios (inicialmente oculto) -->
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modal-body">
+                <!-- El contenido del formulario se insertará aquí dinámicamente -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast para mensajes -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/countries.js"></script>
+    <script src="js/cities.js"></script>
+
+    <!-- Script de funcionalidad principal -->
+    <script>
+        // Funcionalidad de Tabs
+        document.addEventListener('DOMContentLoaded', () => {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            tabButtons.forEach(button => {
+                button. addEventListener('click', () => {
+                    // Remover clase active de todos
+                    tabButtons. forEach(btn => btn.classList. remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+
+                    // Agregar clase active al seleccionado
+                    button.classList.add('active');
+                    const tabId = button.getAttribute('data-tab');
+                    document.getElementById(`${tabId}-tab`).classList.add('active');
+
+                    // 🆕 Cargar datos según el tab seleccionado
+                    if (tabId === 'cities') {
+                        loadCities();
+                    } else if (tabId === 'countries') {
+                        loadCountries();
+                    }
+                });
+            });
+        });
+
+        // Funciones para Modal
+        function showModal() {
+            document.getElementById('modal').classList. add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList. remove('show');
+            document. getElementById('modal-body').innerHTML = '';
+        }
+
+        // Cerrar modal al hacer click fuera
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Funciones para Toast (mensajes)
+        function showToast(message, type = 'success') {
+            const toast = document. getElementById('toast');
+            toast. textContent = message;
+            toast.className = `toast ${type} show`;
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Funciones placeholder (se implementarán después)
+        function showCreateCountryForm() {
+            const modalBody = document.getElementById('modal-body');
+    
+            modalBody.innerHTML = `
+                <h2>➕ Crear Nuevo País</h2>
+                <form id="create-country-form" onsubmit="handleCreateCountry(event)">
+                    <div class="form-group">
+                        <label for="name">Nombre del País *</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="continent">Continente *</label>
+                        <select id="continent" name="continent" required>
+                            <option value="">Seleccionar...</option>
+                            <option value="África">África</option>
+                            <option value="América">América</option>
+                            <option value="Asia">Asia</option>
+                            <option value="Europa">Europa</option>
+                            <option value="Oceanía">Oceanía</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="capital">Capital *</label>
+                        <input type="text" id="capital" name="capital" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="population">Población *</label>
+                        <input type="number" id="population" name="population" required min="1">
+                    </div>  
+
+                    <div class="form-group">
+                        <label for="language">Idioma *</label>
+                        <input type="text" id="language" name="language" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="flag">Bandera (emoji)</label>
+                        <input type="text" id="flag" name="flag" placeholder="🇨🇴" maxlength="2">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="area">Área (km²)</label>
+                        <input type="number" id="area" name="area" min="1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="currency">Moneda</label>
+                        <input type="text" id="currency" name="currency" placeholder="Peso Colombiano">
+                    </div>
+
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">✅ Crear País</button>
+                        <button type="button" class="btn btn-secondary" onclick="closeModal()">❌ Cancelar</button>
+                    </div>
+                </form>
+            `;
+            
+            showModal();
+        }
+
+        async function handleCreateCountry(event) {
+            event.preventDefault();
+    
+            const form = event.target;
+            const formData = new FormData(form);
+    
+            const countryData = {
+                name: formData.get('name'),
+                continent: formData.get('continent'),
+                capital: formData.get('capital'),
+                population: parseInt(formData.get('population')),
+                language: formData. get('language'),
+                flag: formData.get('flag') || '🌍',
+                area: formData.get('area') ?  parseInt(formData.get('area')) : undefined,
+                currency: formData. get('currency') || undefined
+            };
+
+            try {
+                // Deshabilitar botón de envío
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = '⏳ Creando... ';
+
+                const response = await window.fetchAPI('/countries? database=postgresql', {
+                    method: 'POST',
+                    body: JSON.stringify(countryData)
+                });
+
+                if (response.success) {
+                    showToast('✅ País creado exitosamente', 'success');
+                    closeModal();
+                    loadCountries(); // Recargar la lista
+                } else {
+                    showToast('❌ Error al crear país', 'error');
+                }
+
+            } catch (error) {
+                console.error('Error al crear país:', error);
+                showToast(`❌ Error: ${error. message}`, 'error');
+                
+                // Re-habilitar botón
+                const submitBtn = form.querySelector('button[type="submit"]');
+                submitBtn.disabled = false;
+                submitBtn.  textContent = '✅ Crear País';
+            }
+        }
+
+        function showCreateCityForm() {
+            showToast('Función de crear ciudad - Próximamente', 'success');
+        }
+    </script>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/countries.js"></script>
+    <script src="js/cities.js"></script> 
+</body>
+</html>
