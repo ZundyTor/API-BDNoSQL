@@ -125,14 +125,20 @@ app.get('/health', async (req, res) => {
       .then(() => 'OK')
       .catch(() => 'ERROR');
 
-    // Verificar conexión a MongoDB
-    const mongoStatus = await mongoConnection.testConnection()
-      .then(() => 'OK')
-      .catch(() => 'ERROR');
+    // Verificar conexión a MongoDB (opcional)
+    let mongoStatus = 'DISABLED';
+    try {
+      mongoStatus = await mongoConnection.testConnection()
+        .then(() => 'OK')
+        .catch(() => 'ERROR');
+    } catch (e) {
+      mongoStatus = 'DISABLED';
+    }
 
-    const overallStatus = (postgresStatus === 'OK' && mongoStatus === 'OK') ? 'healthy' : 'degraded';
+    // Healthy si PostgreSQL está OK (MongoDB es opcional)
+    const overallStatus = postgresStatus === 'OK' ?  'healthy' : 'degraded';
 
-    res.status(overallStatus === 'healthy' ? 200 : 503).json({
+    res.status(overallStatus === 'healthy' ? 200 : 503). json({
       status: overallStatus,
       timestamp: new Date().toISOString(),
       databases: {
@@ -255,24 +261,34 @@ async function startServer() {
 
     // Inicializar MongoDB
     console.log('📊 Conectando a MongoDB...');
-    await mongoConnection.connect();
-    await mongoConnection.createIndexes();
+    try {
+      await mongoConnection.connect();
+      await mongoConnection.createIndexes();
+      console.log('✅ MongoDB conectado');
+    } catch (mongoError) {
+      console.warn('⚠️  MongoDB no disponible (modo solo PostgreSQL)');
+      console.warn('   Error:', mongoError.message);
+    }
 
     // Iniciar servidor HTTP
     app.listen(PORT, () => {
+      const baseUrl = process.env.NODE_ENV === 'production' 
+        ? `https://api-bdnosql.onrender.com` 
+        : `http://localhost:${PORT}`;
+      
       console.log(`
 ╔════════════════════════════════════════════════════════╗
 ║          🚀 SERVIDOR INICIADO CORRECTAMENTE            ║
 ╚════════════════════════════════════════════════════════╝
   
   📡 Puerto:        ${PORT}
-  🌐 URL:           http://localhost:${PORT}
-  📚 Documentación: http://localhost:${PORT}/api/v1/docs
-  🏥 Health Check:  http://localhost:${PORT}/health
+  🌐 URL:           ${baseUrl}
+  📚 Documentación: ${baseUrl}/api/v1/docs
+  🏥 Health Check:  ${baseUrl}/health
   
   💾 Bases de datos:
      ✅ PostgreSQL - Conectado
-     ✅ MongoDB    - Conectado
+     ⚠️  MongoDB    - Opcional (puede estar desconectado)
   
   📋 Endpoints disponibles:
      POST   /api/v1/countries
