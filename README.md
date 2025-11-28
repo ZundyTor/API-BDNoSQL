@@ -643,24 +643,6 @@ createCountry({
 
 ---
 
-## 🎯 Contexto Académico
-
-Este proyecto fue desarrollado como parte de actividades académicas del curso de **Bases de Datos NoSQL**:
-
-### **Actividad 8 - Backend:**
-- ✅ API REST con arquitectura hexagonal
-- ✅ CRUD en PostgreSQL y MongoDB
-- ✅ Relación 1:N entre entidades
-- ✅ Deployment en Render + Supabase
-
-### **Actividad 9 - Frontend:**
-- ✅ Interfaz web interactiva
-- ✅ Consumo de API REST
-- ✅ CRUD visual completo
-- ✅ Deployment en producción
-
----
-
 ## 📄 Licencia
 
 Este proyecto está disponible bajo la **Licencia MIT**. 
