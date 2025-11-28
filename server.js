@@ -13,6 +13,7 @@ const mongoConnection = require('./src/infrastructure/database/mongodb/connectio
 // Importar repositories
 const CountryPostgreSQLRepository = require('./src/infrastructure/repositories/CountryPostgreSQLRepository');
 const CountryMongoDBRepository = require('./src/infrastructure/repositories/CountryMongoDBRepository');
+const CityPostgreSQLRepository = require('./src/infrastructure/repositories/CityPostgreSQLRepository');
 
 // Importar casos de uso
 const CreateCountry = require('./src/application/useCases/CreateCountry');
@@ -21,10 +22,17 @@ const GetAllCountries = require('./src/application/useCases/GetAllCountries');
 const GetCountriesByContinent = require('./src/application/useCases/GetCountriesByContinent');
 const UpdateCountry = require('./src/application/useCases/UpdateCountry');
 const DeleteCountry = require('./src/application/useCases/DeleteCountry');
+const CreateCity = require('./src/application/useCases/cities/CreateCity');
+const GetAllCities = require('./src/application/useCases/cities/GetAllCities');
+const GetCityById = require('./src/application/useCases/cities/GetCityById');
+const UpdateCity = require('./src/application/useCases/cities/UpdateCity');
+const DeleteCity = require('./src/application/useCases/cities/DeleteCity');
 
 // Importar controladores y rutas
 const CountryController = require('./src/interfaces/controllers/CountryController');
 const setupCountryRoutes = require('./src/interfaces/routes/countryRoutes');
+const CityController = require('./src/interfaces/controllers/CityController'); 
+const setupCityRoutes = require('./src/interfaces/routes/cityRoutes'); 
 const errorHandler = require('./src/interfaces/middlewares/errorHandler');
 
 // Creamos la aplicación Express
@@ -60,6 +68,8 @@ const repositories = {
   mongodb: new CountryMongoDBRepository()
 };
 
+const cityRepository = new CityPostgreSQLRepository();
+
 // Casos de uso
 const useCases = {
   createCountry: new CreateCountry(repositories),
@@ -72,6 +82,18 @@ const useCases = {
 
 // Controlador
 const countryController = new CountryController(useCases);
+
+// Casos de uso de Cities
+const cityUseCases = {
+  createCity: new CreateCity(cityRepository),
+  getAllCities: new GetAllCities(cityRepository),
+  getCityById: new GetCityById(cityRepository),
+  updateCity: new UpdateCity(cityRepository),
+  deleteCity: new DeleteCity(cityRepository)
+};
+
+// Controlador de Cities
+const cityController = new CityController(cityUseCases);
 
 // ==========================================
 // RUTAS
@@ -194,6 +216,12 @@ app.get('/api/v1/docs', (req, res) => {
 
 // Rutas de la API
 app.use('/api/v1/countries', setupCountryRoutes(countryController));
+app.use('/api/v1/cities', setupCityRoutes(cityController));
+
+// Ruta anidada: ciudades de un país
+app.get('/api/v1/countries/:countryId/cities', (req, res, next) => {
+  cityController.getByCountry(req, res, next);
+});
 
 // ==========================================
 // MANEJO DE ERRORES
@@ -254,6 +282,13 @@ async function startServer() {
      GET    /api/v1/countries/stats/summary
      PUT    /api/v1/countries/:id
      DELETE /api/v1/countries/:id
+
+     POST   /api/v1/cities
+     GET    /api/v1/cities
+     GET    /api/v1/cities/:id
+     PUT    /api/v1/cities/:id
+     DELETE /api/v1/cities/:id
+     GET    /api/v1/countries/:countryId/cities 
   
   Presiona CTRL + C para detener el servidor
       `);

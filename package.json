@@ -1,6 +1,9 @@
 {
   "name": "api-bdnosql",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=16.x"
+  },
   "description": "API para gestionar información de países usando PostgreSQL y MongoDB",
   "main": "server.js",
   "scripts": {
